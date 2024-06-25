@@ -1,9 +1,9 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import "./style.css";
 import Swal from "sweetalert2";
 
 
-function DataTableHeader({ mode, setMode, setProducts, setDeleting }) {
+function DataTableHeader({ mode, setMode, products, setProducts, setDeleting, editProductItd }) {
 
     const emptyProduct = {
         id: "",
@@ -22,6 +22,11 @@ function DataTableHeader({ mode, setMode, setProducts, setDeleting }) {
 
     const [inputData, setInputData] = useState({ ...emptyProduct });
 
+    useEffect(() => {
+        const [product] = products.filter(product => product.id === editProductItd); // 비구조 할당. filter를 걸었을 때 처음 값 하나만 product에 저장
+        setInputData(!product ? { ...emptyProduct } : { ...product }); // input에 체크한 데이터의 값이 입력됨 없으면 emptyProduct객체를 넣어줌 
+    }, [editProductItd]);
+
     const handleInputChange = (e) => {
         setInputData(inputData => ({
             ...inputData,
@@ -30,22 +35,22 @@ function DataTableHeader({ mode, setMode, setProducts, setDeleting }) {
     }
 
     const handleInputKeyDown = (e) => {
-        if(e.keyCode === 13) {
-        if(e.target.name === "productName") {
-            inputRef.size.current.focus();
-        }
-        if(e.target.name === "size") {
-            inputRef.color.current.focus();
-        }
-        if(e.target.name === "color") {
-            inputRef.price.current.focus();
-        }
-        if(e.target.name === "price") {
-            handleSubmitClick();
-            inputRef.productName.current.focus();
+        if (e.keyCode === 13) {
+            if (e.target.name === "productName") {
+                inputRef.size.current.focus();
+            }
+            if (e.target.name === "size") {
+                inputRef.color.current.focus();
+            }
+            if (e.target.name === "color") {
+                inputRef.price.current.focus();
+            }
+            if (e.target.name === "price") {
+                handleSubmitClick();
+                inputRef.productName.current.focus();
+            }
         }
     }
-}
 
     const handleChangeModeClick = (e) => {
         setMode(parseInt(e.target.value));
@@ -70,7 +75,28 @@ function DataTableHeader({ mode, setMode, setProducts, setDeleting }) {
         }
 
         if (mode === 2) {
-            alert("상품수정");
+            Swal.fire({
+                title: "상품 정보 수정",
+                showCancelButton: true,
+                confirmButtonText: "확인",
+                cancelButtonText: "취소"
+            }).then(result => {
+                if (result.isConfirmed) {
+                    setProducts(products => [
+                        ...products.map(product => {
+                            if (product.id === editProductItd) {
+                                const { id, ...rest } = inputData; // inputData에서 id를 제외하고 나머지 속성을 rest에 넣어줌
+                                return {
+                                    ...product,
+                                    ...rest
+                                }
+                            }
+                            return product;
+                        })
+                    ]);
+                    resetMode();
+                }
+            });
         }
 
         if (mode === 3) {
@@ -82,12 +108,12 @@ function DataTableHeader({ mode, setMode, setProducts, setDeleting }) {
                 confirmButtonColor: "red",
                 cancelButtonText: "취소"
             }).then(result => {
-                if(result.isConfirmed) {
+                if (result.isConfirmed) {
                     setDeleting(true);
                 }
             });
         }
-        
+
     }
 
     const handleCancelClick = () => {

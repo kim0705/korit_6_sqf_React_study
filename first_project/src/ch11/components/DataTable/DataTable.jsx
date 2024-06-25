@@ -10,6 +10,7 @@ function DataTable() {
     const [mode, setMode] = useState(0); // 0이면 조회, 1이면 추가, 2면 수정, 3이면 삭제
     const [products, setProducts] = useState([...SAMPLE_PRODUCTS]);
     const [isDeleting, setDeleting] = useState(false);
+    const [editProductItd, setEditProductId] = useState(0); // Id는 1부터, 0이면 없는 상태
 
     useEffect(() => {
         const lsProducts = localStorage.getItem("products");
@@ -19,12 +20,27 @@ function DataTable() {
 
     useEffect(() => {
         localStorage.setItem("products", JSON.stringify(products));
-    }, [products])
+    }, [products]);
 
     return (
         <div className="table-main-container">
-            <DataTableHeader mode={mode} setMode={setMode} setProducts={setProducts} setDeleting={setDeleting}/>
-            <DataTableBody mode={mode} setMode={setMode} products={products} setProducts={setProducts} isDeleting={isDeleting} setDeleting={setDeleting}/>
+            <DataTableHeader
+                mode={mode}
+                setMode={setMode}
+                products={products}
+                setProducts={setProducts}
+                setDeleting={setDeleting}
+                editProductItd={editProductItd}
+            />
+            <DataTableBody
+                mode={mode}
+                setMode={setMode}
+                products={products}
+                setProducts={setProducts}
+                isDeleting={isDeleting}
+                setDeleting={setDeleting}
+                setEditProductId={setEditProductId}
+            />
         </div>
     );
 }
