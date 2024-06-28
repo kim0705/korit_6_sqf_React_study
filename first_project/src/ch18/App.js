@@ -7,17 +7,13 @@ import { reset } from './styles/global';
 import MainBody from './components/MainBody/MainBody';
 
 function App(props) {
-    const [isMainSidbarShow, setMainSidbarShow] = useState(false);
     return (
         <>
             <Global styles={reset} />
             <MainLayout>
-                <MainHeader setMainSidbarShow={setMainSidbarShow} />
+                <MainHeader />
                 <MainBody />
-                <MainSidbar
-                    isMainSidbarShow={isMainSidbarShow}
-                    setMainSidbarShow={setMainSidbarShow}
-                />
+                <MainSidbar />
             </MainLayout>
         </>
     );
